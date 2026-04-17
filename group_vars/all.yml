@@ -1,0 +1,32 @@
+---
+mgmt_vrf: MGMT
+tenant_vrf: TENANT
+mgmt_gateway: 192.168.100.1
+
+fabric_mtu: 9214
+vxlan_udp_port: 4789
+virtual_router_mac: "00:1c:73:00:00:99"
+
+l3vni: 50000
+
+vlans:
+  10:
+    name: BACHELIERS
+    vni: 10010
+    subnet: 10.10.10.0/24
+    gateway: 10.10.10.1/24
+  20:
+    name: TP_PROJETS
+    vni: 10020
+    subnet: 10.10.20.0/24
+    gateway: 10.10.20.1/24
+  30:
+    name: GPU_IA_CLOUD
+    vni: 10030
+    subnet: 10.10.30.0/24
+    gateway: 10.10.30.1/24
+  40:
+    name: INFRA_DC
+    vni: 10040
+    subnet: 10.10.40.0/24
+    gateway: 10.10.40.1/24

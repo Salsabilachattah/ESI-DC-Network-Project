@@ -1,0 +1,29 @@
+---
+- name: Deploy Arista EOS DC Fabric
+  hosts: spines:leafs
+  gather_facts: false
+
+  tasks:
+    - name: Select template for device role
+      ansible.builtin.set_fact:
+        eos_template: "{{ 'eos_spine.j2' if inventory_hostname in groups['spines'] else 'eos_leaf.j2' }}"
+
+    - name: Generate EOS config from template
+      ansible.builtin.template:
+        src: "templates/{{ eos_template }}"
+        dest: "/tmp/{{ inventory_hostname }}.cfg"
+      delegate_to: localhost
+
+    - name: Push configuration to switch
+      arista.eos.eos_config:
+        src: "/tmp/{{ inventory_hostname }}.cfg"
+        save_when: changed
+
+    - name: Show version
+      ansible.netcommon.cli_command:
+        command: "show version"
+      register: show_version
+
+    - name: Print version
+      ansible.builtin.debug:
+        var: show_version.stdout

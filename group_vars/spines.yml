@@ -1,0 +1,4 @@
+---
+device_role: spine
+bgp_as: 65100
+evpn_rr: true

@@ -1,0 +1,47 @@
+hostname {{ hostname }}
+!
+service routing protocols model multi-agent
+!
+ip routing
+!
+vrf instance {{ mgmt_vrf }}
+!
+interface Loopback0
+   ip address {{ loopback0 }}
+!
+{% for link in uplinks %}
+interface {{ link.name }}
+   description {{ link.description }}
+   no switchport
+   ip address {{ link.ip }}
+   mtu {{ fabric_mtu }}
+!
+{% endfor %}
+router bgp {{ bgp_as }}
+   router-id {{ bgp_router_id }}
+   no bgp default ipv4-unicast
+   maximum-paths 4 ecmp 4
+   !
+   neighbor FABRIC peer group
+   neighbor FABRIC send-community standard extended large
+   neighbor FABRIC bfd
+   !
+{% for nbr in bgp_neighbors %}
+   neighbor {{ nbr.ip }} peer group FABRIC
+   neighbor {{ nbr.ip }} remote-as {{ nbr.remote_as }}
+{% endfor %}
+   !
+   address-family ipv4
+      neighbor FABRIC activate
+      network {{ loopback0 }}
+   !
+   address-family evpn
+      neighbor FABRIC activate
+{% for nbr in bgp_neighbors %}
+      neighbor {{ nbr.ip }} route-reflector-client
+{% endfor %}
+!
+management ssh
+   vrf {{ mgmt_vrf }}
+      no shutdown
+!

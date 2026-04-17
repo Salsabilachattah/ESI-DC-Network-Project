@@ -1,0 +1,24 @@
+---
+hostname: spine1
+bgp_router_id: 10.1.0.1
+loopback0: 10.1.0.1/32
+management_ip: 192.168.100.101/24
+
+uplinks:
+  - name: Ethernet1
+    description: TO-LEAF1-Eth2
+    ip: 10.0.1.1/30
+  - name: Ethernet2
+    description: TO-LEAF2-Eth1
+    ip: 10.0.1.5/30
+  - name: Ethernet3
+    description: TO-LEAF3-Eth1
+    ip: 10.0.1.9/30
+
+bgp_neighbors:
+  - ip: 10.0.1.2
+    remote_as: 65001
+  - ip: 10.0.1.6
+    remote_as: 65002
+  - ip: 10.0.1.10
+    remote_as: 65000

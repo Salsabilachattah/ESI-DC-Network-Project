@@ -1,0 +1,4 @@
+---
+device_role: leaf
+evpn_rr: false
+tenant_enabled: true

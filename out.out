@@ -1,0 +1,347 @@
+ansible-playbook [core 2.15.13]
+  config file = /etc/ansible/ansible.cfg
+  configured module search path = ['/root/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+  ansible python module location = /usr/local/lib/python3.9/site-packages/ansible
+  ansible collection location = /root/.ansible/collections:/usr/share/ansible/collections
+  executable location = /usr/local/bin/ansible-playbook
+  python version = 3.9.25 (main, Jan 14 2026, 00:00:00) [GCC 11.5.0 20240719 (Red Hat 11.5.0-11)] (/usr/bin/python3)
+  jinja version = 3.0.1
+  libyaml = True
+Using /etc/ansible/ansible.cfg as config file
+host_list declined parsing /root/ansible/inventory.ini as it did not pass its verify_file() method
+script declined parsing /root/ansible/inventory.ini as it did not pass its verify_file() method
+auto declined parsing /root/ansible/inventory.ini as it did not pass its verify_file() method
+yaml declined parsing /root/ansible/inventory.ini as it did not pass its verify_file() method
+Parsed /root/ansible/inventory.ini inventory source with ini plugin
+Skipping callback 'default', as we already have a stdout callback.
+Skipping callback 'minimal', as we already have a stdout callback.
+Skipping callback 'oneline', as we already have a stdout callback.
+
+PLAYBOOK: deploy_dc_fabric.yml *************************************************
+1 plays in deploy_dc_fabric.yml
+
+PLAY [Deploy Arista EOS DC Fabric] *********************************************
+
+TASK [Generate EOS config from template] ***************************************
+task path: /root/ansible/deploy_dc_fabric.yml:7
+<localhost> ESTABLISH LOCAL CONNECTION FOR USER: user
+<localhost> EXEC /bin/sh -c 'echo ~user && sleep 0'
+<localhost> ESTABLISH LOCAL CONNECTION FOR USER: user
+<localhost> EXEC /bin/sh -c 'echo ~user && sleep 0'
+<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /home/user/.ansible/tmp `"&& mkdir "` echo /home/user/.ansible/tmp/ansible-tmp-1776429963.76722-9229-266903796399994 `" && echo ansible-tmp-1776429963.76722-9229-266903796399994="` echo /home/user/.ansible/tmp/ansible-tmp-1776429963.76722-9229-266903796399994 `" ) && sleep 0'
+<localhost> ESTABLISH LOCAL CONNECTION FOR USER: user
+<localhost> EXEC /bin/sh -c 'echo ~user && sleep 0'
+<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /home/user/.ansible/tmp `"&& mkdir "` echo /home/user/.ansible/tmp/ansible-tmp-1776429963.7751122-9228-129455565654784 `" && echo ansible-tmp-1776429963.7751122-9228-129455565654784="` echo /home/user/.ansible/tmp/ansible-tmp-1776429963.7751122-9228-129455565654784 `" ) && sleep 0'
+<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /home/user/.ansible/tmp `"&& mkdir "` echo /home/user/.ansible/tmp/ansible-tmp-1776429963.7809865-9230-215037693801135 `" && echo ansible-tmp-1776429963.7809865-9230-215037693801135="` echo /home/user/.ansible/tmp/ansible-tmp-1776429963.7809865-9230-215037693801135 `" ) && sleep 0'
+<localhost> ESTABLISH LOCAL CONNECTION FOR USER: user
+<localhost> EXEC /bin/sh -c 'echo ~user && sleep 0'
+<localhost> ESTABLISH LOCAL CONNECTION FOR USER: user
+<localhost> EXEC /bin/sh -c 'echo ~user && sleep 0'
+<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /home/user/.ansible/tmp `"&& mkdir "` echo /home/user/.ansible/tmp/ansible-tmp-1776429963.793386-9232-211134469136867 `" && echo ansible-tmp-1776429963.793386-9232-211134469136867="` echo /home/user/.ansible/tmp/ansible-tmp-1776429963.793386-9232-211134469136867 `" ) && sleep 0'
+<localhost> EXEC /bin/sh -c '( umask 77 && mkdir -p "` echo /home/user/.ansible/tmp `"&& mkdir "` echo /home/user/.ansible/tmp/ansible-tmp-1776429963.8042285-9236-34188085173177 `" && echo ansible-tmp-1776429963.8042285-9236-34188085173177="` echo /home/user/.ansible/tmp/ansible-tmp-1776429963.8042285-9236-34188085173177 `" ) && sleep 0'
+<localhost> EXEC /bin/sh -c 'rm -f -r /home/user/.ansible/tmp/ansible-tmp-1776429963.76722-9229-266903796399994/ > /dev/null 2>&1 && sleep 0'
+<localhost> EXEC /bin/sh -c 'rm -f -r /home/user/.ansible/tmp/ansible-tmp-1776429963.7751122-9228-129455565654784/ > /dev/null 2>&1 && sleep 0'
+The full traceback is:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/ansible/template/__init__.py", line 1015, in do_template
+    res = myenv.concat(rf)
+  File "/usr/local/lib/python3.9/site-packages/ansible/template/native_helpers.py", line 83, in ansible_concat
+    return ''.join([to_text(v) for v in nodes])
+  File "/usr/local/lib/python3.9/site-packages/ansible/template/native_helpers.py", line 83, in <listcomp>
+    return ''.join([to_text(v) for v in nodes])
+  File "<template>", line 94, in root
+  File "/usr/lib/python3.9/site-packages/jinja2/runtime.py", line 903, in _fail_with_undefined_error
+    raise self._undefined_exception(self._undefined_message)
+jinja2.exceptions.UndefinedError: 'border_leaf' is undefined
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/ansible/plugins/action/template.py", line 152, in run
+    resultant = templar.do_template(template_data, preserve_trailing_newlines=True, escape_backslashes=False, overrides=overrides)
+  File "/usr/local/lib/python3.9/site-packages/ansible/template/__init__.py", line 1049, in do_template
+    raise AnsibleUndefinedVariable(e, orig_exc=e)
+ansible.errors.AnsibleUndefinedVariable: 'border_leaf' is undefined. 'border_leaf' is undefined
+fatal: [spine2 -> localhost]: FAILED! => {
+    "changed": false,
+    "msg": "AnsibleUndefinedVariable: 'border_leaf' is undefined. 'border_leaf' is undefined"
+}
+The full traceback is:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/ansible/template/__init__.py", line 1015, in do_template
+    res = myenv.concat(rf)
+  File "/usr/local/lib/python3.9/site-packages/ansible/template/native_helpers.py", line 83, in ansible_concat
+    return ''.join([to_text(v) for v in nodes])
+  File "/usr/local/lib/python3.9/site-packages/ansible/template/native_helpers.py", line 83, in <listcomp>
+    return ''.join([to_text(v) for v in nodes])
+  File "<template>", line 94, in root
+  File "/usr/lib/python3.9/site-packages/jinja2/runtime.py", line 903, in _fail_with_undefined_error
+    raise self._undefined_exception(self._undefined_message)
+jinja2.exceptions.UndefinedError: 'border_leaf' is undefined
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/ansible/plugins/action/template.py", line 152, in run
+    resultant = templar.do_template(template_data, preserve_trailing_newlines=True, escape_backslashes=False, overrides=overrides)
+  File "/usr/local/lib/python3.9/site-packages/ansible/template/__init__.py", line 1049, in do_template
+    raise AnsibleUndefinedVariable(e, orig_exc=e)
+ansible.errors.AnsibleUndefinedVariable: 'border_leaf' is undefined. 'border_leaf' is undefined
+fatal: [spine1 -> localhost]: FAILED! => {
+    "changed": false,
+    "msg": "AnsibleUndefinedVariable: 'border_leaf' is undefined. 'border_leaf' is undefined"
+}
+Using module file /usr/local/lib/python3.9/site-packages/ansible/modules/stat.py
+Using module file /usr/local/lib/python3.9/site-packages/ansible/modules/stat.py
+Using module file /usr/local/lib/python3.9/site-packages/ansible/modules/stat.py
+<localhost> PUT /root/.ansible/tmp/ansible-local-92249xaq78nw/tmpnrbkqmh7 TO /home/user/.ansible/tmp/ansible-tmp-1776429963.7809865-9230-215037693801135/AnsiballZ_stat.py
+<localhost> PUT /root/.ansible/tmp/ansible-local-92249xaq78nw/tmp85m0dveu TO /home/user/.ansible/tmp/ansible-tmp-1776429963.793386-9232-211134469136867/AnsiballZ_stat.py
+<localhost> PUT /root/.ansible/tmp/ansible-local-92249xaq78nw/tmpslpwfnxm TO /home/user/.ansible/tmp/ansible-tmp-1776429963.8042285-9236-34188085173177/AnsiballZ_stat.py
+<localhost> EXEC /bin/sh -c 'chmod u+x /home/user/.ansible/tmp/ansible-tmp-1776429963.7809865-9230-215037693801135/ /home/user/.ansible/tmp/ansible-tmp-1776429963.7809865-9230-215037693801135/AnsiballZ_stat.py && sleep 0'
+<localhost> EXEC /bin/sh -c 'chmod u+x /home/user/.ansible/tmp/ansible-tmp-1776429963.793386-9232-211134469136867/ /home/user/.ansible/tmp/ansible-tmp-1776429963.793386-9232-211134469136867/AnsiballZ_stat.py && sleep 0'
+<localhost> EXEC /bin/sh -c 'chmod u+x /home/user/.ansible/tmp/ansible-tmp-1776429963.8042285-9236-34188085173177/ /home/user/.ansible/tmp/ansible-tmp-1776429963.8042285-9236-34188085173177/AnsiballZ_stat.py && sleep 0'
+<localhost> EXEC /bin/sh -c '/usr/bin/python3 /home/user/.ansible/tmp/ansible-tmp-1776429963.793386-9232-211134469136867/AnsiballZ_stat.py && sleep 0'
+<localhost> EXEC /bin/sh -c '/usr/bin/python3 /home/user/.ansible/tmp/ansible-tmp-1776429963.8042285-9236-34188085173177/AnsiballZ_stat.py && sleep 0'
+<localhost> EXEC /bin/sh -c '/usr/bin/python3 /home/user/.ansible/tmp/ansible-tmp-1776429963.7809865-9230-215037693801135/AnsiballZ_stat.py && sleep 0'
+Using module file /usr/local/lib/python3.9/site-packages/ansible/modules/file.py
+<localhost> PUT /root/.ansible/tmp/ansible-local-92249xaq78nw/tmpammqreje TO /home/user/.ansible/tmp/ansible-tmp-1776429963.8042285-9236-34188085173177/AnsiballZ_file.py
+<localhost> EXEC /bin/sh -c 'chmod u+x /home/user/.ansible/tmp/ansible-tmp-1776429963.8042285-9236-34188085173177/ /home/user/.ansible/tmp/ansible-tmp-1776429963.8042285-9236-34188085173177/AnsiballZ_file.py && sleep 0'
+Using module file /usr/local/lib/python3.9/site-packages/ansible/modules/file.py
+<localhost> PUT /root/.ansible/tmp/ansible-local-92249xaq78nw/tmp1z5raowa TO /home/user/.ansible/tmp/ansible-tmp-1776429963.7809865-9230-215037693801135/AnsiballZ_file.py
+Using module file /usr/local/lib/python3.9/site-packages/ansible/modules/file.py
+<localhost> PUT /root/.ansible/tmp/ansible-local-92249xaq78nw/tmpy28a3sgu TO /home/user/.ansible/tmp/ansible-tmp-1776429963.793386-9232-211134469136867/AnsiballZ_file.py
+<localhost> EXEC /bin/sh -c 'chmod u+x /home/user/.ansible/tmp/ansible-tmp-1776429963.793386-9232-211134469136867/ /home/user/.ansible/tmp/ansible-tmp-1776429963.793386-9232-211134469136867/AnsiballZ_file.py && sleep 0'
+<localhost> EXEC /bin/sh -c 'chmod u+x /home/user/.ansible/tmp/ansible-tmp-1776429963.7809865-9230-215037693801135/ /home/user/.ansible/tmp/ansible-tmp-1776429963.7809865-9230-215037693801135/AnsiballZ_file.py && sleep 0'
+<localhost> EXEC /bin/sh -c '/usr/bin/python3 /home/user/.ansible/tmp/ansible-tmp-1776429963.793386-9232-211134469136867/AnsiballZ_file.py && sleep 0'
+<localhost> EXEC /bin/sh -c '/usr/bin/python3 /home/user/.ansible/tmp/ansible-tmp-1776429963.8042285-9236-34188085173177/AnsiballZ_file.py && sleep 0'
+<localhost> EXEC /bin/sh -c '/usr/bin/python3 /home/user/.ansible/tmp/ansible-tmp-1776429963.7809865-9230-215037693801135/AnsiballZ_file.py && sleep 0'
+<localhost> EXEC /bin/sh -c 'rm -f -r /home/user/.ansible/tmp/ansible-tmp-1776429963.793386-9232-211134469136867/ > /dev/null 2>&1 && sleep 0'
+<localhost> EXEC /bin/sh -c 'rm -f -r /home/user/.ansible/tmp/ansible-tmp-1776429963.7809865-9230-215037693801135/ > /dev/null 2>&1 && sleep 0'
+<localhost> EXEC /bin/sh -c 'rm -f -r /home/user/.ansible/tmp/ansible-tmp-1776429963.8042285-9236-34188085173177/ > /dev/null 2>&1 && sleep 0'
+ok: [leaf2 -> localhost] => {
+    "changed": false,
+    "checksum": "afc032d0c2eeb4170e112eec42218f67ea3a8ab3",
+    "dest": "/tmp/leaf2.cfg",
+    "diff": {
+        "after": {
+            "path": "/tmp/leaf2.cfg"
+        },
+        "before": {
+            "path": "/tmp/leaf2.cfg"
+        }
+    },
+    "gid": 0,
+    "group": "root",
+    "invocation": {
+        "module_args": {
+            "_diff_peek": null,
+            "_original_basename": "eos_fabric.j2",
+            "access_time": null,
+            "access_time_format": "%Y%m%d%H%M.%S",
+            "attributes": null,
+            "dest": "/tmp/leaf2.cfg",
+            "follow": true,
+            "force": false,
+            "group": null,
+            "mode": null,
+            "modification_time": null,
+            "modification_time_format": "%Y%m%d%H%M.%S",
+            "owner": null,
+            "path": "/tmp/leaf2.cfg",
+            "recurse": false,
+            "selevel": null,
+            "serole": null,
+            "setype": null,
+            "seuser": null,
+            "src": null,
+            "state": "file",
+            "unsafe_writes": false
+        }
+    },
+    "mode": "0644",
+    "owner": "root",
+    "path": "/tmp/leaf2.cfg",
+    "secontext": "unconfined_u:object_r:user_home_t:s0",
+    "size": 1772,
+    "state": "file",
+    "uid": 0
+}
+ok: [leaf1 -> localhost] => {
+    "changed": false,
+    "checksum": "fa6882102fbc256308f86279e92432291fa7c2e4",
+    "dest": "/tmp/leaf1.cfg",
+    "diff": {
+        "after": {
+            "path": "/tmp/leaf1.cfg"
+        },
+        "before": {
+            "path": "/tmp/leaf1.cfg"
+        }
+    },
+    "gid": 0,
+    "group": "root",
+    "invocation": {
+        "module_args": {
+            "_diff_peek": null,
+            "_original_basename": "eos_fabric.j2",
+            "access_time": null,
+            "access_time_format": "%Y%m%d%H%M.%S",
+            "attributes": null,
+            "dest": "/tmp/leaf1.cfg",
+            "follow": true,
+            "force": false,
+            "group": null,
+            "mode": null,
+            "modification_time": null,
+            "modification_time_format": "%Y%m%d%H%M.%S",
+            "owner": null,
+            "path": "/tmp/leaf1.cfg",
+            "recurse": false,
+            "selevel": null,
+            "serole": null,
+            "setype": null,
+            "seuser": null,
+            "src": null,
+            "state": "file",
+            "unsafe_writes": false
+        }
+    },
+    "mode": "0644",
+    "owner": "root",
+    "path": "/tmp/leaf1.cfg",
+    "secontext": "unconfined_u:object_r:user_home_t:s0",
+    "size": 1996,
+    "state": "file",
+    "uid": 0
+}
+ok: [leaf3 -> localhost] => {
+    "changed": false,
+    "checksum": "6bb6b6dbb4549b7418c8bde494c29eb2c3066f2e",
+    "dest": "/tmp/leaf3.cfg",
+    "diff": {
+        "after": {
+            "path": "/tmp/leaf3.cfg"
+        },
+        "before": {
+            "path": "/tmp/leaf3.cfg"
+        }
+    },
+    "gid": 0,
+    "group": "root",
+    "invocation": {
+        "module_args": {
+            "_diff_peek": null,
+            "_original_basename": "eos_fabric.j2",
+            "access_time": null,
+            "access_time_format": "%Y%m%d%H%M.%S",
+            "attributes": null,
+            "dest": "/tmp/leaf3.cfg",
+            "follow": true,
+            "force": false,
+            "group": null,
+            "mode": null,
+            "modification_time": null,
+            "modification_time_format": "%Y%m%d%H%M.%S",
+            "owner": null,
+            "path": "/tmp/leaf3.cfg",
+            "recurse": false,
+            "selevel": null,
+            "serole": null,
+            "setype": null,
+            "seuser": null,
+            "src": null,
+            "state": "file",
+            "unsafe_writes": false
+        }
+    },
+    "mode": "0644",
+    "owner": "root",
+    "path": "/tmp/leaf3.cfg",
+    "secontext": "unconfined_u:object_r:user_home_t:s0",
+    "size": 1790,
+    "state": "file",
+    "uid": 0
+}
+
+TASK [Push configuration to switch] ********************************************
+task path: /root/ansible/deploy_dc_fabric.yml:13
+redirecting (type: become) ansible.builtin.enable to ansible.netcommon.enable
+redirecting (type: become) ansible.builtin.enable to ansible.netcommon.enable
+redirecting (type: become) ansible.builtin.enable to ansible.netcommon.enable
+The full traceback is:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/ansible/executor/task_executor.py", line 165, in run
+    res = self._execute()
+  File "/usr/local/lib/python3.9/site-packages/ansible/executor/task_executor.py", line 656, in _execute
+    result = self._handler.run(task_vars=vars_copy)
+  File "/root/.ansible/collections/ansible_collections/arista/eos/plugins/action/eos.py", line 50, in run
+    result = super(ActionModule, self).run(task_vars=task_vars)
+  File "/root/.ansible/collections/ansible_collections/ansible/netcommon/plugins/action/network.py", line 72, in run
+    result = self._exec_module(module)
+  File "/root/.ansible/collections/ansible_collections/ansible/netcommon/plugins/action/network.py", line 347, in _exec_module
+    module.main()  # allow unhandled module exceptions to fly; handled by TE to preserve as much error detail as possible
+  File "/root/.ansible/collections/ansible_collections/arista/eos/plugins/modules/eos_config.py", line 433, in main
+    connection = get_connection(module)
+  File "/root/.ansible/collections/ansible_collections/arista/eos/plugins/module_utils/network/eos/eos.py", line 57, in get_connection
+    cap = json.loads(connection_proxy.get_capabilities())
+  File "/usr/local/lib/python3.9/site-packages/ansible/module_utils/connection.py", line 200, in __rpc__
+    raise ConnectionError(to_text(msg, errors='surrogate_then_replace'), code=code)
+ansible.module_utils.connection.ConnectionError: sha1 is not supported by this backend for RSA signing.
+fatal: [leaf2]: FAILED! => {
+    "msg": "Unexpected failure during module execution: sha1 is not supported by this backend for RSA signing.",
+    "stdout": ""
+}
+The full traceback is:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/ansible/executor/task_executor.py", line 165, in run
+    res = self._execute()
+  File "/usr/local/lib/python3.9/site-packages/ansible/executor/task_executor.py", line 656, in _execute
+    result = self._handler.run(task_vars=vars_copy)
+  File "/root/.ansible/collections/ansible_collections/arista/eos/plugins/action/eos.py", line 50, in run
+    result = super(ActionModule, self).run(task_vars=task_vars)
+  File "/root/.ansible/collections/ansible_collections/ansible/netcommon/plugins/action/network.py", line 72, in run
+    result = self._exec_module(module)
+  File "/root/.ansible/collections/ansible_collections/ansible/netcommon/plugins/action/network.py", line 347, in _exec_module
+    module.main()  # allow unhandled module exceptions to fly; handled by TE to preserve as much error detail as possible
+  File "/root/.ansible/collections/ansible_collections/arista/eos/plugins/modules/eos_config.py", line 433, in main
+    connection = get_connection(module)
+  File "/root/.ansible/collections/ansible_collections/arista/eos/plugins/module_utils/network/eos/eos.py", line 57, in get_connection
+    cap = json.loads(connection_proxy.get_capabilities())
+  File "/usr/local/lib/python3.9/site-packages/ansible/module_utils/connection.py", line 200, in __rpc__
+    raise ConnectionError(to_text(msg, errors='surrogate_then_replace'), code=code)
+ansible.module_utils.connection.ConnectionError: sha1 is not supported by this backend for RSA signing.
+fatal: [leaf3]: FAILED! => {
+    "msg": "Unexpected failure during module execution: sha1 is not supported by this backend for RSA signing.",
+    "stdout": ""
+}
+The full traceback is:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.9/site-packages/ansible/executor/task_executor.py", line 165, in run
+    res = self._execute()
+  File "/usr/local/lib/python3.9/site-packages/ansible/executor/task_executor.py", line 656, in _execute
+    result = self._handler.run(task_vars=vars_copy)
+  File "/root/.ansible/collections/ansible_collections/arista/eos/plugins/action/eos.py", line 50, in run
+    result = super(ActionModule, self).run(task_vars=task_vars)
+  File "/root/.ansible/collections/ansible_collections/ansible/netcommon/plugins/action/network.py", line 72, in run
+    result = self._exec_module(module)
+  File "/root/.ansible/collections/ansible_collections/ansible/netcommon/plugins/action/network.py", line 347, in _exec_module
+    module.main()  # allow unhandled module exceptions to fly; handled by TE to preserve as much error detail as possible
+  File "/root/.ansible/collections/ansible_collections/arista/eos/plugins/modules/eos_config.py", line 433, in main
+    connection = get_connection(module)
+  File "/root/.ansible/collections/ansible_collections/arista/eos/plugins/module_utils/network/eos/eos.py", line 57, in get_connection
+    cap = json.loads(connection_proxy.get_capabilities())
+  File "/usr/local/lib/python3.9/site-packages/ansible/module_utils/connection.py", line 200, in __rpc__
+    raise ConnectionError(to_text(msg, errors='surrogate_then_replace'), code=code)
+ansible.module_utils.connection.ConnectionError: [Errno None] Unable to connect to port 22 on 192.168.100.201
+fatal: [leaf1]: FAILED! => {
+    "msg": "Unexpected failure during module execution: [Errno None] Unable to connect to port 22 on 192.168.100.201",
+    "stdout": ""
+}
+
+PLAY RECAP *********************************************************************
+leaf1                      : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+leaf2                      : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+leaf3                      : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+spine1                     : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+spine2                     : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+

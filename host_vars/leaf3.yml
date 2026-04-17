@@ -1,0 +1,31 @@
+---
+hostname: leaf3
+bgp_as: 65000
+bgp_router_id: 10.1.1.3
+loopback0: 10.1.1.3/32
+management_ip: 192.168.100.203/24
+
+uplinks:
+  - name: Ethernet1
+    description: TO-SPINE1-Eth3
+    ip: 10.0.1.10/30
+  - name: Ethernet2
+    description: TO-SPINE2-Eth3
+    ip: 10.0.2.10/30
+
+bgp_neighbors:
+  - ip: 10.0.1.9
+    remote_as: 65100
+  - ip: 10.0.2.9
+    remote_as: 65100
+
+host_ports: []
+
+leaf_vlans: [40]
+border_leaf: true
+default_route: true
+fw_uplink:
+  name: Ethernet3
+  description: TO-FW2
+  ip: 10.0.0.1/30
+  next_hop: 10.0.0.2

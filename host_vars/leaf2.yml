@@ -1,0 +1,30 @@
+---
+hostname: leaf2
+bgp_as: 65002
+bgp_router_id: 10.1.1.2
+loopback0: 10.1.1.2/32
+management_ip: 192.168.100.202/24
+
+uplinks:
+  - name: Ethernet1
+    description: TO-SPINE1-Eth2
+    ip: 10.0.1.6/30
+  - name: Ethernet2
+    description: TO-SPINE2-Eth2
+    ip: 10.0.2.6/30
+
+bgp_neighbors:
+  - ip: 10.0.1.5
+    remote_as: 65100
+  - ip: 10.0.2.5
+    remote_as: 65100
+
+host_ports:
+  - name: Ethernet3
+    description: ACCESS-GPU-IA-CLOUD
+    mode: access
+    vlan: 30
+
+leaf_vlans: [30]
+border_leaf: false
+default_route: false

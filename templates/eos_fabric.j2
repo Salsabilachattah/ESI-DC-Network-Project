@@ -1,0 +1,132 @@
+hostname {{ hostname }}
+!
+service routing protocols model multi-agent
+!
+ip routing
+{% if device_role == 'leaf' %}
+ip routing vrf {{ tenant_vrf }}
+ip virtual-router mac-address {{ virtual_router_mac }}
+{% endif %}
+!
+vrf instance {{ mgmt_vrf }}
+{% if device_role == 'leaf' %}
+vrf instance {{ tenant_vrf }}
+{% endif %}
+!
+interface Management1
+   vrf {{ mgmt_vrf }}
+   ip address {{ management_ip }}
+!
+ip route vrf {{ mgmt_vrf }} 0.0.0.0/0 {{ mgmt_gateway }}
+!
+interface Loopback0
+   ip address {{ loopback0 }}
+!
+{% if device_role == 'leaf' %}
+{% for vlan_id in leaf_vlans %}
+vlan {{ vlan_id }}
+   name {{ vlans[vlan_id].name }}
+!
+{% endfor %}
+{% endif %}
+
+{% for link in uplinks %}
+interface {{ link.name }}
+   description {{ link.description }}
+   no switchport
+   ip address {{ link.ip }}
+   mtu {{ fabric_mtu }}
+!
+{% endfor %}
+
+{% if border_leaf | default(false) and fw_uplink is defined %}
+interface {{ fw_uplink.name }}
+   description {{ fw_uplink.description }}
+   no switchport
+   ip address {{ fw_uplink.ip }}
+   mtu {{ fabric_mtu }}
+!
+{% endif %}
+
+{% if host_ports is defined %}
+{% for port in host_ports %}
+interface {{ port.name }}
+   description {{ port.description }}
+   switchport access vlan {{ port.vlan }}
+   spanning-tree portfast
+   spanning-tree bpduguard enable
+!
+{% endfor %}
+{% endif %}
+
+{% if device_role == 'leaf' %}
+{% for vlan_id in leaf_vlans %}
+interface Vlan{{ vlan_id }}
+   vrf {{ tenant_vrf }}
+   ip address virtual {{ vlans[vlan_id].gateway }}
+!
+{% endfor %}
+
+interface Vxlan1
+   vxlan source-interface Loopback0
+   vxlan udp-port {{ vxlan_udp_port }}
+{% for vlan_id in leaf_vlans %}
+   vxlan vlan {{ vlan_id }} vni {{ vlans[vlan_id].vni }}
+{% endfor %}
+   vxlan vrf {{ tenant_vrf }} vni {{ l3vni }}
+!
+{% endif %}
+
+{% if default_route and fw_uplink is defined %}
+ip route vrf {{ tenant_vrf }} 0.0.0.0/0 {{ fw_uplink.next_hop }}
+!
+{% endif %}
+
+router bgp {{ bgp_as }}
+   router-id {{ bgp_router_id }}
+   no bgp default ipv4-unicast
+   maximum-paths 4 ecmp 4
+   !
+   neighbor FABRIC peer group
+   neighbor FABRIC send-community standard extended large
+   neighbor FABRIC bfd
+   !
+{% for nbr in bgp_neighbors %}
+   neighbor {{ nbr.ip }} peer group FABRIC
+   neighbor {{ nbr.ip }} remote-as {{ nbr.remote_as }}
+{% endfor %}
+   !
+{% if device_role == 'leaf' %}
+{% for vlan_id in leaf_vlans %}
+   vlan {{ vlan_id }}
+      rd {{ bgp_router_id }}:{{ vlans[vlan_id].vni }}
+      route-target both {{ vlans[vlan_id].vni }}:{{ vlans[vlan_id].vni }}
+      redistribute learned
+   !
+{% endfor %}
+   vrf {{ tenant_vrf }}
+      rd {{ bgp_router_id }}:{{ l3vni }}
+      route-target import evpn {{ l3vni }}:{{ l3vni }}
+      route-target export evpn {{ l3vni }}:{{ l3vni }}
+      redistribute connected
+{% if default_route %}
+      redistribute static
+{% endif %}
+   !
+{% endif %}
+   address-family ipv4
+      neighbor FABRIC activate
+      network {{ loopback0 }}
+   !
+   address-family evpn
+      neighbor FABRIC activate
+{% if evpn_rr %}
+{% for nbr in bgp_neighbors %}
+      neighbor {{ nbr.ip }} route-reflector-client
+{% endfor %}
+{% endif %}
+!
+management ssh
+   vrf {{ mgmt_vrf }}
+      no shutdown
+!
