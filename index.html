@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EVE-NG Network Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #050a0f;
+      --panel:     #080e14;
+      --panel-2:   #0c1520;
+      --border:    #1a2f45;
+      --border-hi: #1e4060;
+      --text:      #c8dae8;
+      --muted:     #4a6a82;
+      --accent:    #00d4ff;
+      --accent-dim:#00d4ff22;
+      --green:     #00ff88;
+      --green-dim: #00ff8820;
+      --red:       #ff3b5c;
+      --red-dim:   #ff3b5c20;
+      --yellow:    #ffb800;
+      --code-bg:   #030609;
+      --mono:      'Share Tech Mono', monospace;
+      --ui:        'Rajdhani', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--ui);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* scanline overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,212,255,0.015) 2px,
+        rgba(0,212,255,0.015) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(90deg, #050a0f 0%, #080e14 60%, #050a0f 100%);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-left h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-shadow: 0 0 18px rgba(0,212,255,0.5);
+    }
+
+    .header-left p {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+      letter-spacing: 0.05em;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    #clock {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── Layout ── */
+    .layout {
+      display: grid;
+      grid-template-columns: 42% 58%;
+      gap: 16px;
+      padding: 16px;
+      min-height: calc(100vh - 60px);
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.4;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel-2);
+      flex-shrink: 0;
+    }
+
+    .card-header h2 {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    /* ── Buttons ── */
+    button {
+      font-family: var(--ui);
+      font-weight: 600;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: 1px solid var(--border-hi);
+      background: var(--panel-2);
+      color: var(--text);
+      padding: 6px 12px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    button:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-dim);
+      box-shadow: 0 0 10px rgba(0,212,255,0.15);
+    }
+
+    button.primary {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    button.primary:hover {
+      background: rgba(0,212,255,0.15);
+      box-shadow: 0 0 16px rgba(0,212,255,0.25);
+    }
+
+    /* ── Topology area ── */
+    #topology-canvas {
+      flex: 1;
+      padding: 24px 16px 16px;
+      overflow-y: auto;
+    }
+
+    /* Node grid — rendered dynamically */
+    .node-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .node {
+      width: 130px;
+      padding: 14px 10px 12px;
+      border: 1px solid var(--border-hi);
+      border-radius: 4px;
+      background: linear-gradient(160deg, #0c1520 0%, #050a0f 100%);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.18s ease;
+      position: relative;
+      animation: fadeIn 0.4s ease both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .node::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 20%; right: 20%;
+      height: 1px;
+      background: var(--border-hi);
+      transition: all 0.18s;
+    }
+
+    .node:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 0 0 1px var(--accent), 0 8px 24px rgba(0,0,0,0.5);
+    }
+
+    .node:hover::after { background: var(--accent); left: 10%; right: 10%; }
+
+    .node.active {
+      border-color: var(--green);
+      box-shadow: 0 0 0 1px var(--green), 0 0 20px var(--green-dim);
+    }
+
+    .node.active::after { background: var(--green); left: 10%; right: 10%; }
+
+    .node .n-icon {
+      font-size: 22px;
+      margin-bottom: 6px;
+      line-height: 1;
+    }
+
+    .node .n-name {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #e0f0ff;
+      margin-bottom: 3px;
+    }
+
+    .node .n-role {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+
+    .node .n-ip {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      opacity: 0.85;
+    }
+
+    /* status dot inside node */
+    .node .n-status {
+      position: absolute;
+      top: 8px; right: 8px;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--yellow);
+      box-shadow: 0 0 6px var(--yellow);
+      transition: all 0.3s;
+    }
+
+    .node .n-status.up   { background: var(--green);  box-shadow: 0 0 8px var(--green); }
+    .node .n-status.down { background: var(--red);    box-shadow: 0 0 8px var(--red); }
+
+    /* ── Links ── */
+    .links-section {
+      border-top: 1px solid var(--border);
+      padding: 10px 14px;
+      flex-shrink: 0;
+    }
+
+    .links-title {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .link-row {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      padding: 4px 8px;
+      border-left: 2px solid var(--border-hi);
+      margin-bottom: 4px;
+      transition: border-color 0.15s;
+    }
+
+    .link-row:hover { border-color: var(--accent); color: var(--text); }
+
+    /* ── Legend ── */
+    #legend {
+      border-top: 1px solid var(--border);
+      padding: 10px 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      flex-shrink: 0;
+      background: var(--panel-2);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .legend-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--yellow);
+      box-shadow: 0 0 6px var(--yellow);
+      flex-shrink: 0;
+      transition: all 0.3s;
+    }
+
+    .legend-dot.up   { background: var(--green); box-shadow: 0 0 8px var(--green); }
+    .legend-dot.down { background: var(--red);   box-shadow: 0 0 8px var(--red); }
+
+    /* ── Right panel ── */
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel-2);
+      flex-shrink: 0;
+    }
+
+    .output-meta {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      padding: 7px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel-2);
+      flex-shrink: 0;
+      letter-spacing: 0.03em;
+    }
+
+    pre {
+      flex: 1;
+      margin: 0;
+      padding: 14px 16px;
+      overflow: auto;
+      background: var(--code-bg);
+      color: #7fffbf;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    /* loading animation */
+    .loading-text::after {
+      content: '';
+      animation: dots 1.2s steps(4, end) infinite;
+    }
+
+    @keyframes dots {
+      0%   { content: ''; }
+      25%  { content: '.'; }
+      50%  { content: '..'; }
+      75%  { content: '...'; }
+    }
+
+    @media (max-width: 960px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>EVE-NG Network Dashboard</h1>
+    <p>Lab: {{ lab_name }} &nbsp;/&nbsp; Click a node to inspect</p>
+  </div>
+  <div class="header-right">
+    <span id="clock"></span>
+    <button onclick="refreshStatus()">&#8635; Refresh</button>
+  </div>
+</header>
+
+<main class="layout">
+
+  <!-- LEFT: Topology -->
+  <section class="card">
+    <div class="card-header">
+      <h2>Topology</h2>
+      <span id="node-count" style="font-family:var(--mono);font-size:11px;color:var(--muted);">loading...</span>
+    </div>
+
+    <div id="topology-canvas">
+      <div class="node-grid" id="node-grid">
+        <!-- nodes injected by JS -->
+      </div>
+    </div>
+
+    <div class="links-section" id="links-section" style="display:none;">
+      <div class="links-title">Links</div>
+      <div id="link-list"></div>
+    </div>
+
+    <div id="legend"></div>
+  </section>
+
+  <!-- RIGHT: Output -->
+  <section class="card">
+    <div class="card-header">
+      <h2 id="output-title">Output</h2>
+      <button class="primary" onclick="loadRunningConfig()">Running Config</button>
+    </div>
+
+    <div class="actions">
+      <button onclick="loadCommand('interfaces')">Interfaces</button>
+      <button onclick="loadCommand('bgp')">BGP</button>
+      <button onclick="loadCommand('routes')">Routes</button>
+      <button onclick="loadCommand('lldp')">LLDP</button>
+      <button onclick="loadCommand('cdp')">CDP</button>
+      <button onclick="loadCommand('ospf')">OSPF</button>
+      <button onclick="loadCommand('arp')">ARP</button>
+      <button onclick="loadCommand('vlan')">VLAN</button>
+      <button onclick="loadCommand('vrf')">VRF</button>
+      <button onclick="loadCommand('version')">Version</button>
+    </div>
+
+    <div class="output-meta" id="output-meta">No node selected</div>
+    <pre id="output-box">&#9654; Click a node on the topology to begin.</pre>
+  </section>
+
+</main>
+
+<script>
+  // ── State ──────────────────────────────────────────────────────────────────
+  let selectedNode = null;
+  let topoData = null;   // cached from /api/topology
+  let statusData = {};   // cached from /api/status
+
+  // ── Clock ──────────────────────────────────────────────────────────────────
+  function tickClock() {
+    const el = document.getElementById('clock');
+    if (el) el.textContent = new Date().toLocaleTimeString('en-GB');
+  }
+  tickClock();
+  setInterval(tickClock, 1000);
+
+  // ── Build topology from API ────────────────────────────────────────────────
+  async function buildTopology() {
+    try {
+      const r = await fetch('/api/topology');
+      topoData = await r.json();
+    } catch (e) {
+      document.getElementById('output-box').textContent = 'Failed to load topology: ' + e.message;
+      return;
+    }
+
+    const nodes = topoData.nodes;
+    const links = topoData.links || [];
+    const grid  = document.getElementById('node-grid');
+    grid.innerHTML = '';
+
+    const nodeIds = Object.keys(nodes);
+    document.getElementById('node-count').textContent = nodeIds.length + ' nodes';
+
+    nodeIds.forEach((id, i) => {
+      const n = nodes[id];
+      const div = document.createElement('div');
+      div.className = 'node';
+      div.id = 'node-' + id;
+      div.style.animationDelay = (i * 0.06) + 's';
+      div.onclick = () => selectNode(id);
+
+      const icon = n.role && n.role.includes('spine') ? '⬡' :
+                   n.role && n.role.includes('border') ? '◈' : '▣';
+
+      div.innerHTML = `
+        <div class="n-status" id="status-${id}"></div>
+        <div class="n-icon">${icon}</div>
+        <div class="n-name">${n.label || id}</div>
+        <div class="n-role">${n.role || 'switch'}</div>
+        <div class="n-ip">${n.mgmt_ip}</div>
+      `;
+      grid.appendChild(div);
+    });
+
+    // Links
+    const linkList = document.getElementById('link-list');
+    const linksSection = document.getElementById('links-section');
+    linkList.innerHTML = '';
+    if (links.length > 0) {
+      linksSection.style.display = '';
+      links.forEach(l => {
+        const row = document.createElement('div');
+        row.className = 'link-row';
+        row.textContent = `${l.a}:${l.a_if}  ↔  ${l.b}:${l.b_if}`;
+        linkList.appendChild(row);
+      });
+    }
+
+    // Legend
+    buildLegend(nodeIds, nodes);
+  }
+
+  function buildLegend(nodeIds, nodes) {
+    const legend = document.getElementById('legend');
+    legend.innerHTML = '';
+    nodeIds.forEach(id => {
+      const n = nodes[id];
+      const item = document.createElement('div');
+      item.className = 'legend-item';
+      item.innerHTML = `<div class="legend-dot" id="dot-${id}"></div>${n.label || id}`;
+      legend.appendChild(item);
+    });
+  }
+
+  // ── Status refresh ─────────────────────────────────────────────────────────
+  async function refreshStatus() {
+    try {
+      const r = await fetch('/api/status');
+      const data = await r.json();
+      statusData = data.nodes || {};
+      Object.entries(statusData).forEach(([id, info]) => {
+        const dot  = document.getElementById('dot-' + id);
+        const sdot = document.getElementById('status-' + id);
+        const cls  = info.running ? 'up' : 'down';
+        if (dot)  { dot.className  = 'legend-dot ' + cls; }
+        if (sdot) { sdot.className = 'n-status ' + cls; }
+      });
+    } catch (e) {
+      console.warn('Status refresh failed:', e);
+    }
+  }
+
+  // ── Node selection ─────────────────────────────────────────────────────────
+  function selectNode(id) {
+    selectedNode = id;
+    document.querySelectorAll('.node').forEach(n => n.classList.remove('active'));
+    const el = document.getElementById('node-' + id);
+    if (el) el.classList.add('active');
+
+    const n = topoData && topoData.nodes[id];
+    document.getElementById('output-title').textContent =
+      (n ? n.label : id) + '  /  ' + (n ? n.mgmt_ip : '');
+    setMeta('Node: ' + id + '  |  ' + (n ? n.mgmt_ip : ''));
+    loadRunningConfig();
+  }
+
+  // ── Output helpers ─────────────────────────────────────────────────────────
+  function setOutput(text, loading) {
+    const el = document.getElementById('output-box');
+    el.textContent = text;
+    el.className = loading ? 'loading-text' : '';
+  }
+
+  function setMeta(text) {
+    document.getElementById('output-meta').textContent = text;
+  }
+
+  async function fetchJson(url) {
+    const r = await fetch(url);
+    const data = await r.json().catch(() => null);
+    if (!r.ok) throw new Error(data && data.error ? data.error : 'HTTP ' + r.status);
+    return data;
+  }
+
+  // ── Commands ───────────────────────────────────────────────────────────────
+  async function loadRunningConfig() {
+    if (!selectedNode) { setOutput('Select a node first.'); return; }
+    setOutput('Fetching running-config', true);
+    setMeta('Node: ' + selectedNode + '  |  show running-config  |  ...');
+    try {
+      const data = await fetchJson('/api/node/' + selectedNode + '/running-config');
+      setOutput(data.output || '(empty)');
+      setMeta('Node: ' + selectedNode + '  |  ' + data.mgmt_ip + '  |  ' + data.timestamp);
+    } catch (err) {
+      setOutput('Error:\n' + err.message);
+    }
+  }
+
+  async function loadCommand(cmd) {
+    if (!selectedNode) { setOutput('Select a node first.'); return; }
+    setOutput('Running ' + cmd, true);
+    try {
+      const data = await fetchJson('/api/node/' + selectedNode + '/command/' + cmd);
+      setOutput(data.output || '(empty)');
+      setMeta('Node: ' + selectedNode + '  |  ' + data.command + '  |  ' + data.timestamp);
+    } catch (err) {
+      setOutput('Error:\n' + err.message);
+    }
+  }
+
+  // ── Init ───────────────────────────────────────────────────────────────────
+  buildTopology().then(() => refreshStatus());
+  setInterval(refreshStatus, 12000);
+</script>
+</body>
+</html>
